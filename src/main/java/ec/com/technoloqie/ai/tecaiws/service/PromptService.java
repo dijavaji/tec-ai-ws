@@ -12,6 +12,8 @@ import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
 import reactor.core.publisher.Flux;
@@ -22,6 +24,8 @@ public class PromptService {
 	private final ChatClient chatClient;
     private final PromptTemplate jokePromptTemplate;
 	private final OpenAiChatModel chatModel;
+	@Value("classpath:/prompts/youtube.st")
+	private Resource ytPromptResource;
 
     @Autowired
     public PromptService(ChatClient chatClient, PromptTemplate jokePromptTemplate, OpenAiChatModel chatModel) {
@@ -55,13 +59,13 @@ public class PromptService {
     }
     
     public ChatResponse findPopularYouTubers(String genre) {
-        String message = """
+        /*String message = """
             Enumere 10 de los YouTubers mas populares en {genre} junto con sus cifras actuales de suscriptores. Si no sabe
         		la respuesta, simplemente diga "No se".
-            """;
+            """;*/
         
         return chatClient.prompt()
-                .user(u -> u.text(message).param("genre",genre))
+                .user(u -> u.text(ytPromptResource).param("genre",genre))
                 .call() //..content() devuelve respuesta chat
                 .chatResponse();
     }
