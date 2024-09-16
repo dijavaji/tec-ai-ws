@@ -51,6 +51,11 @@ public class ChatController {
     	ChatResponse chat = promptService.findPopularYouTubers(genre);
     	return chat.getResult().getOutput();
     }
+    
+    @GetMapping("/dad-jokes")
+    public Generation dadJokes() {
+    	return this.promptService.jokes();
+    }
   //comentado version anterior <spring-ai.version>0.8.1</spring-ai.version>
   	//private final ChatClient chatClient;
   	/*
