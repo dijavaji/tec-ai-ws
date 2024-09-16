@@ -42,9 +42,20 @@ public class ChatController {
     public AssistantMessage getJoke(@RequestParam String adjective, @RequestParam String topic) {
     	Generation generation = promptService.generateJoke(adjective, topic);
     	log.info("bromas {}",generation.getOutput().getContent());
+    	log.info("generation ---{}", generation.toString());
         return generation.getOutput();
     }
     
+    @GetMapping("/youtube/popular")
+    public AssistantMessage findPopularYoutuberByGenre(@RequestParam(value="genre", defaultValue="tecnologia") String genre) {
+    	ChatResponse chat = promptService.findPopularYouTubers(genre);
+    	return chat.getResult().getOutput();
+    }
+    
+    @GetMapping("/dad-jokes")
+    public Generation dadJokes() {
+    	return this.promptService.jokes();
+    }
   //comentado version anterior <spring-ai.version>0.8.1</spring-ai.version>
   	//private final ChatClient chatClient;
   	/*

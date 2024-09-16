@@ -1,8 +1,10 @@
 package ec.com.technoloqie.ai.tecaiws.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.messages.SystemMessage;
 import org.springframework.ai.chat.messages.UserMessage;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
@@ -44,4 +46,32 @@ public class PromptService {
     	Prompt prompt = new Prompt(new UserMessage(message));
         return chatModel.stream(prompt);
     }
+    
+    public String simple(String userInput) {
+    	return this.chatClient.prompt()
+                .user(userInput)
+                .call()
+                .content();
+    }
+    
+    public ChatResponse findPopularYouTubers(String genre) {
+        String message = """
+            Enumere 10 de los YouTubers mas populares en {genre} junto con sus cifras actuales de suscriptores. Si no sabe
+        		la respuesta, simplemente diga "No se".
+            """;
+        
+        return chatClient.prompt()
+                .user(u -> u.text(message).param("genre",genre))
+                .call() //..content() devuelve respuesta chat
+                .chatResponse();
+    }
+    
+    public Generation jokes() {
+    	//PromptTemplate promptTemplate = new PromptTemplate("Tell me a {adjective} joke about {topic}");
+    	var system = new SystemMessage("Tu funcion principal es contar chistes de papa. Si alguien te pide cualquier otro tipo de chiste, dile que solo sabes contar chistes de papa.");
+    	var user = new UserMessage("Cuentame un chiste serio sobre el universo.");
+    	Prompt prompt = new Prompt(List.of(system, user));
+    	return chatModel.call(prompt).getResult(); //.getOutput().getContent()
+    }
+
 }
