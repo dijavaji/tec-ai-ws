@@ -10,9 +10,11 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.converter.ListOutputConverter;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
@@ -77,5 +79,22 @@ public class PromptService {
     	Prompt prompt = new Prompt(List.of(system, user));
     	return chatModel.call(prompt).getResult(); //.getOutput().getContent()
     }
+
+	public List<String> getSongsByArtist(String artist) {
+		ListOutputConverter listOutputConverter = new ListOutputConverter(new DefaultConversionService());
+
+		String format = listOutputConverter.getFormat();
+		var template = """
+	            Por favor, dame una lista de las 10 mejores canciones del artista {artist}. Si no sabes
+	        		la respuesta, simplemente diga "No se". {format}
+	            """;
+		
+		PromptTemplate promptTemplate = new PromptTemplate(template, Map.of("artist", artist, "format", format));
+		Prompt prompt = promptTemplate.create();
+		Generation generation = this.chatModel.call(prompt).getResult();
+
+		List<String> list = listOutputConverter.convert(generation.getOutput().getContent());
+		return list;
+	}
 
 }
