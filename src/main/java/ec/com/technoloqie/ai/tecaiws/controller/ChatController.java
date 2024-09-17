@@ -1,5 +1,6 @@
 package ec.com.technoloqie.ai.tecaiws.controller;
 
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -55,6 +56,11 @@ public class ChatController {
     @GetMapping("/dad-jokes")
     public Generation dadJokes() {
     	return this.promptService.jokes();
+    }
+    
+    @GetMapping("/songs")
+    public List<String> getSongsByArtist(@RequestParam(value="artist", defaultValue="Megadeth") String artist) {
+    	return this.promptService.getSongsByArtist(artist);
     }
   //comentado version anterior <spring-ai.version>0.8.1</spring-ai.version>
   	//private final ChatClient chatClient;
