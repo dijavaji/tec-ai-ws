@@ -77,6 +77,13 @@ public class ChatController {
     	return this.promptService.getBooksByAuthor(author);
     }
     
+    //http://127.0.0.1:8080/chats/olympic?stuffit=true
+    @GetMapping("/olympic")
+    public String getOlympicSports(@RequestParam(value="message", defaultValue="Que deportes se incluiran en los Juegos Olimpicos de Verano de 2024") String message, 
+    		@RequestParam(value="stuffit", defaultValue="false") boolean stuffit ) {
+    	return this.promptService.getOlympicSports(message, stuffit);
+    }
+    
     
   //comentado version anterior <spring-ai.version>0.8.1</spring-ai.version>
   	//private final ChatClient chatClient;

@@ -1,5 +1,6 @@
 package ec.com.technoloqie.ai.tecaiws.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +32,12 @@ public class PromptService {
 	private final OpenAiChatModel chatModel;
 	@Value("classpath:/prompts/youtube.st")
 	private Resource ytPromptResource;
+	
+	@Value("classpath:/prompts/olympic-sports.st")
+	private Resource olympicResource;
+	
+	@Value("classpath:/docs/olympic-data.txt")
+	private Resource docsToStuffResource;
 
     @Autowired
     public PromptService(ChatClient chatClient, PromptTemplate jokePromptTemplate, OpenAiChatModel chatModel) {
@@ -130,6 +137,19 @@ public class PromptService {
 
 		Author authorBooks = beanOutputConverter.convert(generation.getOutput().getContent());
 		return authorBooks;
+	}
+
+	public String getOlympicSports(String message, boolean stuffit) {
+		PromptTemplate promptTemplate = new PromptTemplate(olympicResource);
+    	Map <String, Object> map = new HashMap<>();
+    	map.put("question", message);
+		if(stuffit) {
+			map.put("context", docsToStuffResource);
+    	}else {
+    		map.put("context", "");
+    	}
+    	Prompt prompt = promptTemplate.create(map);
+    	return chatModel.call(prompt).getResult().getOutput().getContent();
 	}
 
 }
