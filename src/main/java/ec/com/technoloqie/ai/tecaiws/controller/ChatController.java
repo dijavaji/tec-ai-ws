@@ -10,10 +10,12 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import ec.com.technoloqie.ai.tecaiws.model.Author;
 import ec.com.technoloqie.ai.tecaiws.service.PromptService;
 import reactor.core.publisher.Flux;
 
@@ -62,6 +64,20 @@ public class ChatController {
     public List<String> getSongsByArtist(@RequestParam(value="artist", defaultValue="Megadeth") String artist) {
     	return this.promptService.getSongsByArtist(artist);
     }
+    
+    //http://127.0.0.1:8080/chats/author/craig%20walls
+    @GetMapping("/author/{author}")
+    public Map<String, Object> getAuthorSocialLinks(@PathVariable String author){
+    	return this.promptService.getAuthorSocialLinks(author);
+    }
+    
+    //http://127.0.0.1:8080/chats/by-author?author=ken%20kousen
+    @GetMapping("/by-author")
+    public Author getBooksByAuthor(@RequestParam(value="author", defaultValue="J.R.R. Tolkien") String author) {
+    	return this.promptService.getBooksByAuthor(author);
+    }
+    
+    
   //comentado version anterior <spring-ai.version>0.8.1</spring-ai.version>
   	//private final ChatClient chatClient;
   	/*

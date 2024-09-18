@@ -10,7 +10,9 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.model.Generation;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.chat.prompt.PromptTemplate;
+import org.springframework.ai.converter.BeanOutputConverter;
 import org.springframework.ai.converter.ListOutputConverter;
+import org.springframework.ai.converter.MapOutputConverter;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,6 +20,7 @@ import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import ec.com.technoloqie.ai.tecaiws.model.Author;
 import reactor.core.publisher.Flux;
 
 @Service
@@ -95,6 +98,38 @@ public class PromptService {
 
 		List<String> list = listOutputConverter.convert(generation.getOutput().getContent());
 		return list;
+	}
+
+	public Map<String, Object> getAuthorSocialLinks(String author) {
+		MapOutputConverter mapOutputConverter = new MapOutputConverter();
+
+		String format = mapOutputConverter.getFormat();
+		String template = """
+		        Generar una lista de enlaces para el autor {author}. Incluir el nombre del autor como clave y los enlaces a redes sociales como objeto.
+		        Si no sabes la respuesta, simplemente diga "No se". {format}
+		        """;
+
+		Prompt prompt = new PromptTemplate(template,
+		        Map.of("author", author, "format", format)).create();
+
+		Generation generation = chatModel.call(prompt).getResult();
+
+		Map<String, Object> result = mapOutputConverter.convert(generation.getOutput().getContent());
+		return result;
+	}
+
+	public Author getBooksByAuthor(String author) {
+		BeanOutputConverter<Author> beanOutputConverter =  new BeanOutputConverter<>(Author.class);
+		String format = beanOutputConverter.getFormat();
+		
+		String template = """
+				Genera una lista de libros escritos por el autor {author}. Si no estas seguro de que un libro pertenece a este autor, no lo incluyas.
+				{format}
+			        """;
+		Generation generation = chatModel.call(new PromptTemplate(template, Map.of("author", author, "format", format)).create()).getResult();
+
+		Author authorBooks = beanOutputConverter.convert(generation.getOutput().getContent());
+		return authorBooks;
 	}
 
 }
