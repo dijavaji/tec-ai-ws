@@ -1,6 +1,6 @@
 package ec.com.technoloqie.ai.tecaiws.config;
 
-//import static dev.langchain4j.model.huggingface.HuggingFaceModelName.TII_UAE_FALCON_7B_INSTRUCT;
+import static dev.langchain4j.model.huggingface.HuggingFaceModelName.TII_UAE_FALCON_7B_INSTRUCT;
 import static java.time.Duration.ofSeconds;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.huggingface.HuggingFaceChatModel;
+import dev.langchain4j.model.huggingface.HuggingFaceLanguageModel;
 
 @Configuration
 public class LangChainConfiguration {
@@ -26,10 +27,10 @@ public class LangChainConfiguration {
     }
     
     @Bean
-    HuggingFaceChatModel HuggingFaceChatModel() {
+    HuggingFaceChatModel huggingFaceChatModel() {
     	HuggingFaceChatModel model = HuggingFaceChatModel.builder()
                 .accessToken(hfApiKey)
-                .modelId("microsoft/Phi-3.5-mini-instruct")
+                .modelId("NousResearch/Hermes-3-Llama-3.1-8B")		//microsoft/Phi-3.5-mini-instruct  Qwen/Qwen2.5-72B-Instruct
                 .timeout(ofSeconds(15))
                 .temperature(0.7)
                 .maxNewTokens(20)
@@ -37,4 +38,18 @@ public class LangChainConfiguration {
                 .build();
     	return model;
     }
+    
+    @Bean
+    HuggingFaceLanguageModel huggingFaceLanguageModel() {
+    	 HuggingFaceLanguageModel model = HuggingFaceLanguageModel.builder()
+                 .accessToken(hfApiKey)
+                 .modelId(TII_UAE_FALCON_7B_INSTRUCT)
+                 .timeout(ofSeconds(15))
+                 .temperature(0.7)
+                 .maxNewTokens(20)
+                 .waitForModel(true)
+                 .build();
+    	 return model;
+    }
+    
 }
