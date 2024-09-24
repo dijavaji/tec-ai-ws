@@ -30,7 +30,7 @@ public class LangChainConfiguration {
     HuggingFaceChatModel huggingFaceChatModel() {
     	HuggingFaceChatModel model = HuggingFaceChatModel.builder()
                 .accessToken(hfApiKey)
-                .modelId("NousResearch/Hermes-3-Llama-3.1-8B")		//microsoft/Phi-3.5-mini-instruct  Qwen/Qwen2.5-72B-Instruct
+                .modelId("microsoft/Phi-3.5-mini-instruct")		// meta-llama/Meta-Llama-3.1-70B-Instruct  NousResearch/Hermes-3-Llama-3.1-8B  microsoft/Phi-3.5-mini-instruct  Qwen/Qwen2.5-72B-Instruct
                 .timeout(ofSeconds(15))
                 .temperature(0.7)
                 .maxNewTokens(20)
