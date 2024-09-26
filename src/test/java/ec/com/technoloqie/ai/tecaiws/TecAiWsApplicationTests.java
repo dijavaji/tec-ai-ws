@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.document.Document;
+import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.reader.ExtractedTextFormatter;
 import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.reader.pdf.config.PdfDocumentReaderConfig;
@@ -23,10 +24,14 @@ import dev.langchain4j.chain.ConversationalChain;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.message.UserMessage;
 import dev.langchain4j.memory.ChatMemory;
+import dev.langchain4j.memory.chat.ChatMemoryProvider;
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.huggingface.HuggingFaceChatModel;
 import dev.langchain4j.model.input.Prompt;
 import dev.langchain4j.model.input.PromptTemplate;
+import dev.langchain4j.service.AiServices;
+import ec.com.technoloqie.ai.tecaiws.service.Assistant;
 
 
 
@@ -114,6 +119,8 @@ class TecAiWsApplicationTests {
 	
 	//No se me ocurre ningun caso de uso en el que sea necesario agregar mensajes manualmente a ChatMemory en lugar de usar ConversationalChain, pero existe esa opcion.
 	//Segun los JavaDocs de ConversationalChain, se recomienda usar AiServices en su lugar, ya que es mas potente
+	//https://github.com/langchain4j/langchain4j-examples/blob/main/other-examples/src/main/java/ChatMemoryExamples.java
+	//Chat memory
 	@Test
 	public void manuallyAddMessagesChatMemoryTest() {
 		//ChatLanguageModel model = OpenAiChatModel.withApiKey(openAiKey);
@@ -129,5 +136,29 @@ class TecAiWsApplicationTests {
 		logger.info(answer2.text()); // Quentin Tarantino was born on March 27, 1963, so he is currently 58 years old.
 		chatMemory.add(answer2);
 	}
+	
+	
+	//Separate chat memory for each user
+	//https://github.com/langchain4j/langchain4j-examples/blob/main/other-examples/src/main/java/ServiceWithMemoryForEachUserExample.java
+	@Test
+	public void serviceWithMemoryForEachUserTest() {
+		Assistant assistant = AiServices.builder(Assistant.class)
+                .chatLanguageModel(hfchatModel)
+                .chatMemoryProvider(memoryId -> MessageWindowChatMemory.withMaxMessages(10))
+                .build();
+
+		logger.info(assistant.chat(1, "Hello, my name is Klaus"));
+        // Hi Klaus! How can I assist you today?
+
+		logger.info(assistant.chat(2, "Hello, my name is Francine"));
+        // Hello Francine! How can I assist you today?
+
+		logger.info(assistant.chat(1, "What is my name?"));
+        // Your name is Klaus.
+
+		logger.info(assistant.chat(2, "What is my name?"));
+        // Your name is Francine.
+	}
+	
 
 }

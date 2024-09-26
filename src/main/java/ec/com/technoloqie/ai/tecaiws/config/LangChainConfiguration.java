@@ -11,6 +11,7 @@ import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.huggingface.HuggingFaceChatModel;
 import dev.langchain4j.model.huggingface.HuggingFaceLanguageModel;
+import ec.com.technoloqie.ai.tecaiws.service.Assistant;
 
 @Configuration
 public class LangChainConfiguration {
