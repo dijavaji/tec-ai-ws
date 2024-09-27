@@ -11,7 +11,6 @@ import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.document.Document;
-import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.reader.ExtractedTextFormatter;
 import org.springframework.ai.reader.pdf.PagePdfDocumentReader;
 import org.springframework.ai.reader.pdf.config.PdfDocumentReaderConfig;
@@ -31,6 +30,7 @@ import dev.langchain4j.model.huggingface.HuggingFaceChatModel;
 import dev.langchain4j.model.input.Prompt;
 import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.service.AiServices;
+import ec.com.technoloqie.ai.tecaiws.repository.ChatMemoryStoreRepository;
 import ec.com.technoloqie.ai.tecaiws.service.Assistant;
 
 
@@ -160,5 +160,32 @@ class TecAiWsApplicationTests {
         // Your name is Francine.
 	}
 	
+	//Persistent chat memory for each user
+	//https://github.com/langchain4j/langchain4j-examples/blob/main/other-examples/src/main/java/ServiceWithPersistentMemoryForEachUserExample.java
+	@Test
+	public void serviceWithPersistentMemoryForEachUserTest() {
+		ChatMemoryStoreRepository store = new ChatMemoryStoreRepository();
 
+        ChatMemoryProvider chatMemoryProvider = memoryId -> MessageWindowChatMemory.builder()
+                .id(memoryId)
+                .maxMessages(10)
+                .chatMemoryStore(store)
+                .build();
+		
+		//ChatLanguageModel model = OpenAiChatModel.builder().apiKey(ApiKeys.OPENAI_API_KEY) .modelName(GPT_4_O_MINI) .build();
+
+        Assistant assistant = AiServices.builder(Assistant.class)
+                .chatLanguageModel(hfchatModel)
+                .chatMemoryProvider(chatMemoryProvider)
+                .build();
+
+        logger.info(assistant.chat(1, "Hello, my name is Klaus"));
+        logger.info(assistant.chat(2, "Hi, my name is Francine"));
+
+        // Now, comment out the two lines above, uncomment the two lines below, and run again.
+
+        // logger.info(assistant.chat(1, "What is my name?"));
+        // logger.info(assistant.chat(2, "What is my name?"));
+		
+	}
 }
