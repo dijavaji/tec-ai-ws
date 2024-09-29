@@ -2,12 +2,16 @@ package ec.com.technoloqie.ai.tecaiws;
 
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.mapdb.DB;
+import org.mapdb.DBMaker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.ai.document.Document;
@@ -188,4 +192,36 @@ class TecAiWsApplicationTests {
         // logger.info(assistant.chat(2, "What is my name?"));
 		
 	}
+	
+	//recuperar datos de MapDB
+	@Test
+	public void selectMapDbfile() {
+		
+		DB db = null;
+        try {
+            db = DBMaker.fileDB(new File("multi-user-chat-memory.db")).closeOnJvmShutdown().make();
+            for (final Entry<String, Object> entry : db.getAll().entrySet()) {
+                final String name = entry.getKey();
+                final Object value = entry.getValue();
+                if (value instanceof Map) {
+                    inspectMap(name, (Map<?, ?>) value);
+                } else {
+                    System.err.println(String.format("Unexpected type (%s) for '%s'.", value.getClass(), name));
+                }
+            }
+        } finally {
+            if (db != null) {
+                db.close();
+            }
+        }
+    }
+
+    private static <K, V> void inspectMap(final String name, final Map<K, V> map) {
+        System.out.println(name);
+        for (final Entry<K, V> entry : map.entrySet()) {
+            final K key = entry.getKey();
+            final V value = entry.getValue();
+            System.out.println(String.format("    %s = %s [%s, %s]", key, value, key.getClass(), value.getClass()));
+        }
+    }
 }
