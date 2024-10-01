@@ -9,15 +9,23 @@ import org.springframework.context.annotation.Configuration;
 
 import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
+import dev.langchain4j.memory.chat.TokenWindowChatMemory;
+import dev.langchain4j.model.Tokenizer;
+import dev.langchain4j.model.chat.StreamingChatLanguageModel;
 import dev.langchain4j.model.huggingface.HuggingFaceChatModel;
 import dev.langchain4j.model.huggingface.HuggingFaceLanguageModel;
+import dev.langchain4j.model.ollama.OllamaStreamingChatModel;
+import dev.langchain4j.service.AiServices;
 import ec.com.technoloqie.ai.tecaiws.service.Assistant;
+import ec.com.technoloqie.ai.tecaiws.service.CustomerSupportAgent;
 
 @Configuration
 public class LangChainConfiguration {
 	
 	@Value("${langchain4j.hugging-face.chat-model.api-key}")
     private String hfApiKey;
+	
+	private static String MODEL_NAME="orca-mini";
 	
 	/**
      * This chat memory will be used by an {@link Assistant}
@@ -52,5 +60,28 @@ public class LangChainConfiguration {
                  .build();
     	 return model;
     }
+    
+    @Bean
+    StreamingChatLanguageModel streamingChatLanguageModel() {
+    	return OllamaStreamingChatModel.builder()
+        .baseUrl("http://localhost:11434")
+        .modelName(MODEL_NAME)
+        .temperature(0.0)
+        .build();
+    }
+    
+    @Bean
+    Tokenizer tokenizer() {
+    	return null;
+    }
+    
+    /*@Bean
+    CustomerSupportAgent customerSupportAgent(StreamingChatLanguageModel streamingChatLanguageModel, Tokenizer tokenizer) {
+    	return AiServices.builder(CustomerSupportAgent.class)
+    			.streamingChatLanguageModel(streamingChatLanguageModel)
+    			//.chatMemoryProvider(memoryId -> TokenWindowChatMemory.builder().id(memoryId).maxTokens(500, tokenizer).build())
+    			.chatMemory(MessageWindowChatMemory.withMaxMessages(20))
+    			.build();
+    }*/
     
 }
