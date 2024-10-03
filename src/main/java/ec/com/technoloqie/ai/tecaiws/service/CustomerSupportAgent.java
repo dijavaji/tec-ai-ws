@@ -29,5 +29,5 @@ public interface CustomerSupportAgent {
 			Before changing a booking you MUST ensure it is permitted by the terms.
 			Today is {{current_date}}
             """)
-	TokenStream chat(@MemoryId Integer memoryId, @UserMessage String userMessage);
+	TokenStream chat(@MemoryId int memoryId, @UserMessage String userMessage);
 }

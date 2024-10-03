@@ -25,7 +25,7 @@ public class LangChainConfiguration {
 	@Value("${langchain4j.hugging-face.chat-model.api-key}")
     private String hfApiKey;
 	
-	private static String MODEL_NAME="orca-mini";
+	private static String MODEL_NAME="qwen2:0.5b";		//llama3:latest		all-minilm:latest	orca-mini
 	
 	/**
      * This chat memory will be used by an {@link Assistant}
