@@ -1,11 +1,8 @@
 package ec.com.technoloqie.ai.tecaiws;
 
-import java.time.Duration;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,13 +43,17 @@ public class StreamingChatTest {
 			
 			//Flux.fromArray("I'm sorry, my brain is not yet hooked up.".split("(?<-\\s)")).delayElements(Duration.ofMillis(200));
 			
-			Flux<String> flux = assistantService.chat(100, "hola mi nombre es Cristina");
+			//Flux<String> flux = assistantService.chat(100, "hola mi nombre es Cristina");
 			//Flux<String> flux = assistantService.chat(100, "indicame cual es mi nombre?");
 			//Flux<String> flux = assistantService.chat(100, "Puedes explicarme la politica de cancelacion por favor?");
+			Flux<String> flux = assistantService.chat(100, "Hey, can you tell me about the cancellation policy?");
+			
+			//Flux<String> flux = assistantService.chat(100, "Que requisitos se requiere para realizar la cancelacion");
+			
 			flux.subscribe(logger::info);
 			
 			
-			Thread.sleep((long) 30000);
+			Thread.sleep((long) 60000);
 			logger.info("finaliza getOllamaChatTest.");
 		}catch(Exception e) {
 			logger.error("Error getOllamaChatTest.", e);

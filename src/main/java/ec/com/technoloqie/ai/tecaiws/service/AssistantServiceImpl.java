@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import dev.langchain4j.memory.chat.ChatMemoryProvider;
 import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.StreamingChatLanguageModel;
+import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.service.AiServices;
 import ec.com.technoloqie.ai.tecaiws.repository.ChatMemoryStoreRepository;
 import reactor.core.publisher.Flux;
@@ -16,10 +17,12 @@ public class AssistantServiceImpl {
 	//private CustomerSupportAgent customerSupportAgent;
 	
 	private StreamingChatLanguageModel streamingChatLanguageModel;
+	private ContentRetriever contentRetriever;
 	
-	private AssistantServiceImpl(StreamingChatLanguageModel streamingChatLanguageModel) {
+	private AssistantServiceImpl(StreamingChatLanguageModel streamingChatLanguageModel, ContentRetriever contentRetriever) {
 		//this.customerSupportAgent=customerSupportAgent;
 		this.streamingChatLanguageModel = streamingChatLanguageModel;
+		this.contentRetriever = contentRetriever;
 	}
 	
 	public Flux<String> chat(Integer chatId, String question){
@@ -36,6 +39,8 @@ public class AssistantServiceImpl {
 		.streamingChatLanguageModel(streamingChatLanguageModel)
 		//.chatMemoryProvider(memoryId -> TokenWindowChatMemory.builder().id(memoryId).maxTokens(500, tokenizer).build())
 		.chatMemoryProvider(chatMemoryProvider)
+		.contentRetriever(contentRetriever)
+		//.retriever(null) deprecado
 		.build();
 		Sinks.Many<String> sink = Sinks.many().unicast().onBackpressureBuffer(); 
 		
