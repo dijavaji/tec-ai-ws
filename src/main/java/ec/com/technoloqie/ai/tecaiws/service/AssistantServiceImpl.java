@@ -18,11 +18,14 @@ public class AssistantServiceImpl {
 	
 	private StreamingChatLanguageModel streamingChatLanguageModel;
 	private ContentRetriever contentRetriever;
+	private BookingTools bookingTools;
 	
-	private AssistantServiceImpl(StreamingChatLanguageModel streamingChatLanguageModel, ContentRetriever contentRetriever) {
+	private AssistantServiceImpl(StreamingChatLanguageModel streamingChatLanguageModel, ContentRetriever contentRetriever,
+			BookingTools bookingTools) {
 		//this.customerSupportAgent=customerSupportAgent;
 		this.streamingChatLanguageModel = streamingChatLanguageModel;
 		this.contentRetriever = contentRetriever;
+		this.bookingTools = bookingTools;
 	}
 	
 	public Flux<String> chat(Integer chatId, String question){
@@ -41,6 +44,7 @@ public class AssistantServiceImpl {
 		.chatMemoryProvider(chatMemoryProvider)
 		.contentRetriever(contentRetriever)
 		//.retriever(null) deprecado
+		.tools(bookingTools)
 		.build();
 		Sinks.Many<String> sink = Sinks.many().unicast().onBackpressureBuffer(); 
 		

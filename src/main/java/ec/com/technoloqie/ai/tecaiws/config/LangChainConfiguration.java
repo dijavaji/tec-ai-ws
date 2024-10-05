@@ -20,7 +20,7 @@ import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.embedding.onnx.allminilml6v2.AllMiniLmL6V2EmbeddingModel;
 import dev.langchain4j.model.huggingface.HuggingFaceChatModel;
 import dev.langchain4j.model.huggingface.HuggingFaceLanguageModel;
-import dev.langchain4j.model.ollama.OllamaStreamingChatModel;
+import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.store.embedding.EmbeddingStore;
@@ -72,11 +72,16 @@ public class LangChainConfiguration {
     
     @Bean
     StreamingChatLanguageModel streamingChatLanguageModel() {
-    	return OllamaStreamingChatModel.builder()
+    	/*return OllamaStreamingChatModel.builder()
         .baseUrl("http://localhost:11434")
         .modelName(MODEL_NAME)
         .temperature(0.0)
-        .build();
+        .build();*/
+    	return OpenAiStreamingChatModel.builder()
+    	        .apiKey(System.getenv("OPENAI_API_KEY"))
+    	        .temperature(0.1)
+		        .modelName("gpt-4o-mini")
+    	        .build();
     }
     
     @Bean
