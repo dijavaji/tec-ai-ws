@@ -91,6 +91,13 @@
             <artifactId>astra-db-client</artifactId>
             <version>1.2.4</version>
         </dependency>
+        
+        
+		<dependency>
+		    <groupId>dev.langchain4j</groupId>
+		    <artifactId>langchain4j-ollama</artifactId>
+		    <version>0.35.0</version>
+		</dependency>
 
 
 
