@@ -44,14 +44,14 @@ public class StreamingChatTest {
 			//Flux.fromArray("I'm sorry, my brain is not yet hooked up.".split("(?<-\\s)")).delayElements(Duration.ofMillis(200));
 			
 			//Flux<String> flux = assistantService.chat(100, "hola mi nombre es Cristina Smith");
-			//Flux<String> flux = assistantService.chat(100, "indicame cual es mi nombre?");
+			Flux<String> flux = assistantService.chat(100, "indicame cual es mi nombre?");
 			//Flux<String> flux = assistantService.chat(100, "Puedes explicarme la politica de cancelacion por favor?");
 			
 			//Flux<String> flux = assistantService.chat(100, "Hey, can you tell me about the cancellation policy?");
 			//Flux<String> flux = assistantService.chat(100, "Que requisitos se requiere para realizar la cancelacion");
 			
 			//Flux<String> flux = assistantService.chat(100, "Hi my name is Cristina Smith. My booking number is 123-456, Can you please cancel it.");
-			Flux<String> flux = assistantService.chat(100, "Hola mi nombre es Cristina Smith. Mi numero de reserva es 123-456, puedes ayudarme cancelandolo.");
+			//Flux<String> flux = assistantService.chat(100, "Hola mi nombre es Cristina Smith. Mi numero de reserva es 123-456, puedes ayudarme cancelandolo.");
 			
 			flux.subscribe(logger::info);
 			
