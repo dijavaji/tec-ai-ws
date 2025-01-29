@@ -23,7 +23,9 @@ import org.springframework.stereotype.Service;
 
 import ec.com.technoloqie.ai.tecaiws.model.Author;
 import reactor.core.publisher.Flux;
-
+/**
+ * Utilizado para demos de spring AI
+ */
 @Service
 public class PromptService {
 	
@@ -103,7 +105,7 @@ public class PromptService {
 		Prompt prompt = promptTemplate.create();
 		Generation generation = this.chatModel.call(prompt).getResult();
 
-		List<String> list = listOutputConverter.convert(generation.getOutput().getContent());
+		List<String> list = listOutputConverter.convert(generation.getOutput().getText());
 		return list;
 	}
 
@@ -121,7 +123,7 @@ public class PromptService {
 
 		Generation generation = chatModel.call(prompt).getResult();
 
-		Map<String, Object> result = mapOutputConverter.convert(generation.getOutput().getContent());
+		Map<String, Object> result = mapOutputConverter.convert(generation.getOutput().getText());
 		return result;
 	}
 
@@ -135,7 +137,7 @@ public class PromptService {
 			        """;
 		Generation generation = chatModel.call(new PromptTemplate(template, Map.of("author", author, "format", format)).create()).getResult();
 
-		Author authorBooks = beanOutputConverter.convert(generation.getOutput().getContent());
+		Author authorBooks = beanOutputConverter.convert(generation.getOutput().getText());
 		return authorBooks;
 	}
 
@@ -149,7 +151,7 @@ public class PromptService {
     		map.put("context", "");
     	}
     	Prompt prompt = promptTemplate.create(map);
-    	return chatModel.call(prompt).getResult().getOutput().getContent();
+    	return chatModel.call(prompt).getResult().getOutput().getText();
 	}
 
 }

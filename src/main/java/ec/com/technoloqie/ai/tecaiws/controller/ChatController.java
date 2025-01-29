@@ -44,7 +44,7 @@ public class ChatController {
     @GetMapping("/joke")
     public AssistantMessage getJoke(@RequestParam String adjective, @RequestParam String topic) {
     	Generation generation = promptService.generateJoke(adjective, topic);
-    	log.info("bromas {}",generation.getOutput().getContent());
+    	log.info("bromas {}",generation.getOutput().getText());
     	log.info("generation ---{}", generation.toString());
         return generation.getOutput();
     }
