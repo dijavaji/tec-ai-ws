@@ -41,5 +41,20 @@ public class AIConfig {
     public PromptTemplate jokePromptTemplate() {
         return new PromptTemplate("Tell me a {adjective} joke about {topic}");
     }
+    
+    
+    /*@Bean
+    public EmbeddingModel embeddingModel() {
+    	var ollamaApi = new OllamaApi();
+        return new OllamaEmbeddingModel(ollamaApi, OllamaOptions.builder()
+    			.model(OllamaModel.MISTRAL.id())
+                .build(), new ObservationRegistry(), null);
+
+    }
+    
+    @Bean
+    VectorStore vectorStore(EmbeddingModel embeddingModel){
+        return null;
+    }*/
 
 }
