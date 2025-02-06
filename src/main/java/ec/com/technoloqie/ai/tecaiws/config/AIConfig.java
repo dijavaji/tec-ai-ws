@@ -28,12 +28,20 @@ public class AIConfig {
 	@Bean
     public OpenAiChatModel openAiClient() {
 		//System.getenv("GROQ_API_KEY")
-		var openAiApi = new OpenAiApi("https://api.groq.com/openai", groqApiKey );
+		//ocupando groqAI
+		/*var openAiApi = new OpenAiApi("https://api.groq.com/openai", groqApiKey );
 		var openAiChatOptions = OpenAiChatOptions.builder()
 				.model("llama3-70b-8192") // comentados deprecados.withModel("llama3-70b-8192")
 				.temperature(0.4) //.withTemperature(0.4)
 				.maxTokens(200)   //.withMaxTokens(200)
 		        .build();
+		return new OpenAiChatModel(openAiApi, openAiChatOptions);*/
+		var openAiApi = new OpenAiApi(System.getenv("OPENAI_API_KEY"));
+		var openAiChatOptions = OpenAiChatOptions.builder()
+	            .model("gpt-3.5-turbo-0125")
+	            .temperature(0.4)
+	            //.maxTokens(200)
+	            .build();
 		return new OpenAiChatModel(openAiApi, openAiChatOptions);
     }
 

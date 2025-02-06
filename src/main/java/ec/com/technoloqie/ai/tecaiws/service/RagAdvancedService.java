@@ -5,10 +5,14 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ai.chat.model.Generation;
+import org.springframework.ai.converter.MapOutputConverter;
+import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.stereotype.Service;
 
 import dev.langchain4j.data.document.Document;
@@ -31,6 +35,8 @@ import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
 import dev.langchain4j.store.embedding.EmbeddingStore;
 import dev.langchain4j.store.embedding.EmbeddingStoreIngestor;
+import ec.com.technoloqie.ai.tecaiws.model.dto.ChatDto;
+import ec.com.technoloqie.ai.tecaiws.model.dto.ChatNewsResponse;
 import lombok.extern.slf4j.Slf4j;
 
 
@@ -41,11 +47,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RagAdvancedService {
 	
-	@Autowired
 	private EmbeddingStore<TextSegment> embeddingStore;
-	@Autowired
 	private EmbeddingModel embeddingModel;
-	//@Autowired
+	
+	private final OpenAiChatModel chatModel;
+	
+	public RagAdvancedService(EmbeddingStore<TextSegment> embeddingStore, EmbeddingModel embeddingModel,
+			OpenAiChatModel chatModel) {
+		super();
+		this.embeddingStore = embeddingStore;
+		this.embeddingModel = embeddingModel;
+		this.chatModel = chatModel;
+	}
+
 	//private ChatLanguageModel model;
 	
 	public List<Document> queryJSONVector(String query, String acercaDe, String informacionSobre) {
@@ -87,10 +101,6 @@ public class RagAdvancedService {
 	        System.out.println("Relevant Information:\n"+information);
 	        
 	        Prompt prompt = PromptTemplate.from("""
-                    Tell me about {{name}}?
-                    
-                    Use the information to answer the question:
-                    {{information}}
                     """)
             .apply(Map.of("name", acercaDe, "information", information));	//MediaHack
 	        String answer = model.generate(prompt.toUserMessage()).content().text();
@@ -138,4 +148,38 @@ public class RagAdvancedService {
      		LocalDate startHour,
      		LocalDate finishHour) {
      }
+
+	public ChatNewsResponse getFakeNewsLinks(ChatDto chat) {
+		ChatNewsResponse chatNewsResponse = new ChatNewsResponse();
+		
+		MapOutputConverter mapOutputConverter = new MapOutputConverter();
+		
+		try {
+			
+			URL url = new URL("https://openlab.ec/mediahack"); //URL("https://openlab.ec/mediahack");
+			//Document document = loadDocument(toPath("/siva.txt"), new TextDocumentParser());
+			Document htmlDocument = UrlDocumentLoader.load(url, new TextDocumentParser());
+			//HtmlTextExtractor transformer = new HtmlTextExtractor(null, null, true);
+			// Document document = transformer.transform(htmlDocument);
+			HtmlToTextDocumentTransformer transformer = new HtmlToTextDocumentTransformer();
+			Document document = transformer.transform(htmlDocument);
+			
+			log.info("documento tomado {}", document.text());
+			
+			String format = mapOutputConverter.getFormat();
+			String template = "";
+
+			org.springframework.ai.chat.prompt.Prompt prompt = new org.springframework.ai.chat.prompt.PromptTemplate(template,
+			        Map.of("input", chat.getText(), "documents", document.text())).create();
+
+			Generation generation = chatModel.call(prompt).getResult();
+			
+			chatNewsResponse.setResponse(generation.getOutput().getText());
+			//Map<String, Object> result = mapOutputConverter.convert(generation.getOutput().getText());
+			log.info("respuesta ai {}", chatNewsResponse.getResponse());
+		}catch(Exception e) {
+			log.error("Error al momento de consultar las noticias falsas", e);
+		}
+		return chatNewsResponse;
+	}
 }

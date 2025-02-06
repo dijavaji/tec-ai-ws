@@ -7,8 +7,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import dev.langchain4j.data.document.Document;
+import ec.com.technoloqie.ai.tecaiws.model.dto.ChatDto;
+import ec.com.technoloqie.ai.tecaiws.model.dto.ChatNewsResponse;
 import ec.com.technoloqie.ai.tecaiws.service.RagAdvancedService;
 
 @SpringBootTest
@@ -24,4 +27,13 @@ public class AdvancedRagTest {
 		
 		Assertions.assertNotNull(documents,"htmlLoaderTest");
     }
+	
+	@Test
+	public void testFakeNews() {
+		ChatDto chatDto = new ChatDto();
+		chatDto.setText("Alcalde de Guayaquil roba combustible y lo vende en baldes al Peru.");
+		ChatNewsResponse response = ragService.getFakeNewsLinks(chatDto );
+		
+		Assertions.assertNotNull(response,"htmlLoaderTest");
+	}
 }
