@@ -39,7 +39,7 @@ public class AIConfig {
 		var openAiApi = new OpenAiApi(System.getenv("OPENAI_API_KEY"));
 		var openAiChatOptions = OpenAiChatOptions.builder()
 	            .model("gpt-3.5-turbo-0125")
-	            .temperature(0.4)
+	            .temperature(0.1)
 	            //.maxTokens(200)
 	            .build();
 		return new OpenAiChatModel(openAiApi, openAiChatOptions);
