@@ -8,6 +8,14 @@ public class ChatNewsResponse {
 	
 	private Collection <String> urlNews; 
 	
+	private String newsName;
+	
+	private String constrast;
+	
+	private String clasification;
+	
+	private String analysis;
+	
 	private String generationId;
 	
 	public Collection<String> getUrlNews() {
@@ -32,6 +40,38 @@ public class ChatNewsResponse {
 
 	public void setResponse(String response) {
 		this.response = response;
+	}
+
+	public String getNewsName() {
+		return newsName;
+	}
+
+	public void setNewsName(String newsName) {
+		this.newsName = newsName;
+	}
+
+	public String getConstrast() {
+		return constrast;
+	}
+
+	public void setConstrast(String constrast) {
+		this.constrast = constrast;
+	}
+
+	public String getClasification() {
+		return clasification;
+	}
+
+	public void setClasification(String clasification) {
+		this.clasification = clasification;
+	}
+
+	public String getAnalysis() {
+		return analysis;
+	}
+
+	public void setAnalysis(String analysis) {
+		this.analysis = analysis;
 	}
 
 }
