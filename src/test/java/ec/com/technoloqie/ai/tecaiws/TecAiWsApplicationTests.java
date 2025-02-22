@@ -2,6 +2,7 @@ package ec.com.technoloqie.ai.tecaiws;
 
 import static com.dtsx.astra.sdk.utils.TestUtils.TEST_REGION;
 import static com.dtsx.astra.sdk.utils.TestUtils.getAstraToken;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mapdb.DB;
 import org.mapdb.DBMaker;
@@ -34,6 +36,7 @@ import dev.langchain4j.model.huggingface.HuggingFaceChatModel;
 import dev.langchain4j.model.input.Prompt;
 import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.service.AiServices;
+import ec.com.technoloqie.ai.tecaiws.commons.SentimentEnum;
 import ec.com.technoloqie.ai.tecaiws.repository.CassandraChatMemoryRepository;
 import ec.com.technoloqie.ai.tecaiws.repository.ChatMemoryStoreRepository;
 import ec.com.technoloqie.ai.tecaiws.service.Assistant;
@@ -272,5 +275,41 @@ class TecAiWsApplicationTests {
                 .databaseRegion(TEST_REGION)
                 .keyspace(KEYSPACE)
                 .build();
+    }
+    
+    @Test
+    public void translateUsingServiceTest() {
+    	logger.info("inicia translateUsingServiceTest");
+    	try {
+    		Assistant assistant = AiServices.builder(Assistant.class)
+                    .chatLanguageModel(hfchatModel)
+                    //.chatMemoryProvider(memoryId -> MessageWindowChatMemory.withMaxMessages(10))
+                    .build();
+        	
+        	String italian = assistant.translate("Hello, how are you?", "italian");
+        	logger.info(italian);
+        	assertThat(italian).isEqualTo("Ciao, come stai?");
+    	}catch(Exception e) {
+    		logger.error("Error translateUsingServiceTest. {}", e);
+    	}
+    }
+    
+    @Test
+    public void analyzeSentimentOfTest() {
+    	Assistant assistant = AiServices.builder(Assistant.class)
+                .chatLanguageModel(hfchatModel)
+                //.chatMemoryProvider(memoryId -> MessageWindowChatMemory.withMaxMessages(10))
+                .build();
+    	
+    	assertThat(assistant.analyzeSentimentOf("I love java")).isEqualTo(SentimentEnum.POSITIVE);
+    }
+    
+    @Test
+    public void isPositiveTest() {
+    	Assistant assistant = AiServices.builder(Assistant.class)
+                .chatLanguageModel(hfchatModel)
+                //.chatMemoryProvider(memoryId -> MessageWindowChatMemory.withMaxMessages(10))
+                .build();
+    	Assertions.assertTrue(assistant.isPositive("I love java"),"isPositiveTest");
     }
 }

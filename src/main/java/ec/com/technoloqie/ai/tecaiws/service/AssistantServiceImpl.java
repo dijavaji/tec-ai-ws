@@ -44,7 +44,7 @@ public class AssistantServiceImpl {
 		.chatMemoryProvider(chatMemoryProvider)
 		.contentRetriever(contentRetriever)
 		//.retriever(null) deprecado
-		.tools(bookingTools)
+		//.tools(bookingTools) comentado para modelo hugging face java.lang.IllegalArgumentException: Tools are currently not supported by this model
 		.build();
 		Sinks.Many<String> sink = Sinks.many().unicast().onBackpressureBuffer(); 
 		

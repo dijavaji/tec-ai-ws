@@ -20,7 +20,7 @@ import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.embedding.onnx.allminilml6v2.AllMiniLmL6V2EmbeddingModel;
 import dev.langchain4j.model.huggingface.HuggingFaceChatModel;
 import dev.langchain4j.model.huggingface.HuggingFaceLanguageModel;
-import dev.langchain4j.model.openai.OpenAiStreamingChatModel;
+import dev.langchain4j.model.ollama.OllamaStreamingChatModel;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
 import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.store.embedding.EmbeddingStore;
@@ -48,9 +48,9 @@ public class LangChainConfiguration {
     HuggingFaceChatModel huggingFaceChatModel() {
     	HuggingFaceChatModel model = HuggingFaceChatModel.builder()
                 .accessToken(hfApiKey)
-                .modelId("microsoft/Phi-3.5-mini-instruct")		// meta-llama/Meta-Llama-3.1-70B-Instruct  NousResearch/Hermes-3-Llama-3.1-8B  microsoft/Phi-3.5-mini-instruct  Qwen/Qwen2.5-72B-Instruct
+                .modelId("mistralai/Mistral-7B-Instruct-v0.1")		// meta-llama/Meta-Llama-3.1-70B-Instruct  NousResearch/Hermes-3-Llama-3.1-8B  microsoft/Phi-3.5-mini-instruct  Qwen/Qwen2.5-72B-Instruct
                 .timeout(ofSeconds(15))
-                .temperature(0.7)
+                .temperature(0.1)
                 .maxNewTokens(20)
                 .waitForModel(true)
                 .build();
@@ -72,16 +72,16 @@ public class LangChainConfiguration {
     
     @Bean
     StreamingChatLanguageModel streamingChatLanguageModel() {
-    	/*return OllamaStreamingChatModel.builder()
+    	return OllamaStreamingChatModel.builder()
         .baseUrl("http://localhost:11434")
         .modelName(MODEL_NAME)
         .temperature(0.0)
-        .build();*/
-    	return OpenAiStreamingChatModel.builder()
+        .build();
+    	/*return OpenAiStreamingChatModel.builder()
     	        .apiKey(System.getenv("OPENAI_API_KEY"))
     	        .temperature(0.1)
 		        .modelName("gpt-4o-mini")
-    	        .build();
+    	        .build();*/
     }
     
     @Bean

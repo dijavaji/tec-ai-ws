@@ -30,9 +30,9 @@ public class AIConfig {
 		//System.getenv("GROQ_API_KEY")
 		var openAiApi = new OpenAiApi("https://api.groq.com/openai", groqApiKey );
 		var openAiChatOptions = OpenAiChatOptions.builder()
-		            .withModel("llama3-70b-8192")
-		            //.withTemperature(0.4)
-		            .withMaxTokens(200)
+				.model("llama3-70b-8192") // comentados deprecados.withModel("llama3-70b-8192")
+				.temperature(0.4) //.withTemperature(0.4)
+				.maxTokens(200)   //.withMaxTokens(200)
 		        .build();
 		return new OpenAiChatModel(openAiApi, openAiChatOptions);
     }
