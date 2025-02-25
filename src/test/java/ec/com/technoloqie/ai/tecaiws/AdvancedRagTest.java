@@ -28,7 +28,7 @@ public class AdvancedRagTest {
     }
 	
 	@Test
-	public void testFakeNews() {
+	void testFakeNews() {
 		ChatDto chatDto = new ChatDto();
 		chatDto.setText("Alcalde de Guayaquil roba combustible y lo vende en baldes al Peru.");
 		ChatNewsResponse response = ragService.getFakeNewsLinks(chatDto );
@@ -37,10 +37,17 @@ public class AdvancedRagTest {
 	}
 	
 	@Test
-	public void assistantWebSearchTest() {
+	void assistantWebSearchTest() {
 		
 		String response = ragService.webSearch("I had an accident, should I pay extra?");
 		
 		Assertions.assertNotNull(response,"htmlLoaderTest");
+	}
+	
+	@Test
+	void lowLevelNaiveRAGTest() {
+		String response = ragService.lowLevelNaiveRAG("I had an accident, should I pay extra?");
+		
+		Assertions.assertNotNull(response,"lowLevelNaiveRAGTest");
 	}
 }
