@@ -34,8 +34,9 @@ public class LangChainConfiguration {
 	@Value("${langchain4j.hugging-face.chat-model.api-key}")
     private String hfApiKey;
 	
-	private static String MODEL_NAME="qwen2:0.5b";		//llama3:latest		all-minilm:latest	orca-mini
+	private static String MODEL_NAME ="deepseek-r1:14b"; //"qwen2:0.5b";		//llama3:latest		all-minilm:latest	orca-mini
 	
+	private static String OLLAMA_HOST ="http://35.211.131.67:11434";
 	/**
      * This chat memory will be used by an {@link Assistant}
      */
@@ -44,22 +45,21 @@ public class LangChainConfiguration {
         return MessageWindowChatMemory.withMaxMessages(10);
     }
     
-    @Bean
-    HuggingFaceChatModel huggingFaceChatModel() {
-    	HuggingFaceChatModel model = HuggingFaceChatModel.builder()
+   @Bean
+   HuggingFaceChatModel huggingFaceChatModel() {
+    	return HuggingFaceChatModel.builder()
                 .accessToken(hfApiKey)
-                .modelId("mistralai/Mistral-7B-Instruct-v0.1")		// meta-llama/Meta-Llama-3.1-70B-Instruct  NousResearch/Hermes-3-Llama-3.1-8B  microsoft/Phi-3.5-mini-instruct  Qwen/Qwen2.5-72B-Instruct
+                .modelId("deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B")		// mistralai/Mistral-7B-Instruct-v0.1 meta-llama/Meta-Llama-3.1-70B-Instruct  NousResearch/Hermes-3-Llama-3.1-8B  microsoft/Phi-3.5-mini-instruct  Qwen/Qwen2.5-72B-Instruct
                 .timeout(ofSeconds(15))
                 .temperature(0.1)
                 .maxNewTokens(20)
                 .waitForModel(true)
                 .build();
-    	return model;
     }
     
     @Bean
     HuggingFaceLanguageModel huggingFaceLanguageModel() {
-    	 HuggingFaceLanguageModel model = HuggingFaceLanguageModel.builder()
+    	 return HuggingFaceLanguageModel.builder()
                  .accessToken(hfApiKey)
                  .modelId(TII_UAE_FALCON_7B_INSTRUCT)
                  .timeout(ofSeconds(15))
@@ -67,13 +67,12 @@ public class LangChainConfiguration {
                  .maxNewTokens(20)
                  .waitForModel(true)
                  .build();
-    	 return model;
     }
     
     @Bean
     StreamingChatLanguageModel streamingChatLanguageModel() {
     	return OllamaStreamingChatModel.builder()
-        .baseUrl("http://localhost:11434")
+    	.baseUrl(OLLAMA_HOST)	//.baseUrl("http://localhost:11434")
         .modelName(MODEL_NAME)
         .temperature(0.0)
         .build();
@@ -100,8 +99,29 @@ public class LangChainConfiguration {
     
     @Bean
     EmbeddingModel embeddingModel() {
+    	/*return OllamaEmbeddingModel.builder()
+	            .baseUrl(OLLAMA_HOST)
+	            .modelName(MODEL_NAME)
+	            .build();*/
     	return new AllMiniLmL6V2EmbeddingModel();
     }
+    
+    /*@Bean
+	EmbeddingModel embeddingModel() {
+		return OllamaEmbeddingModel.builder()
+	            .baseUrl(OLLAMA_HOST)
+	            .modelName(MODEL_NAME)
+	            .build();
+	}*/
+   /* @Bean
+	ChatLanguageModel chatModel() {
+    	
+		return  OllamaChatModel.builder().baseUrl(OLLAMA_HOST)
+				.modelName(MODEL_NAME)
+				.temperature(0.1)
+				//.timeout(Duration.ofSeconds(60))
+				.build();
+	}*/
     
     @Bean
     EmbeddingStore<TextSegment> embeddingStore() {

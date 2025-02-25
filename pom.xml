@@ -18,6 +18,7 @@
 		<java.version>17</java.version>
 		<spring-ai.version>1.0.0-SNAPSHOT</spring-ai.version>
 		<junit.version>4.13.2</junit.version>
+		 <langchain4j.version>1.0.0-beta1</langchain4j.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -40,7 +41,17 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-
+		
+		<!--dependency>
+    		<groupId>org.springframework.ai</groupId>
+    		<artifactId>spring-ai-ollama</artifactId>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.springframework.ai</groupId>
+			<artifactId>spring-ai-core</artifactId>
+		</dependency-->
+        
 		<!--dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -58,20 +69,31 @@
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-hugging-face</artifactId>
-			<version>0.35.0</version>
+			<version>${langchain4j.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>dev.langchain4j</groupId>
 			<artifactId>langchain4j-spring-boot-starter</artifactId>
-			<version>0.35.0</version>
+			<version>${langchain4j.version}</version>
 		</dependency>
 		
 		 <dependency>
             <groupId>dev.langchain4j</groupId>
             <artifactId>langchain4j-core</artifactId>
-            <version>0.35.0</version>
+            <version>${langchain4j.version}</version>
         </dependency>
+        
+        <dependency>
+    		<groupId>dev.langchain4j</groupId>
+    		<artifactId>langchain4j</artifactId>
+    		<version>${langchain4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>dev.langchain4j</groupId>
+			<artifactId>langchain4j-document-transformer-jsoup</artifactId>
+			<version>${langchain4j.version}</version>
+		</dependency>
         
         <!-- https://mvnrepository.com/artifact/org.mapdb/mapdb -->
 		<dependency>
@@ -92,24 +114,39 @@
             <version>1.2.4</version>
         </dependency>
         
-        
 		<dependency>
 		    <groupId>dev.langchain4j</groupId>
 		    <artifactId>langchain4j-ollama</artifactId>
-		    <version>0.35.0</version>
+		    <version>${langchain4j.version}</version>
 		</dependency>
 		
 		<dependency>
 		    <groupId>dev.langchain4j</groupId>
 		    <artifactId>langchain4j-embeddings-all-minilm-l6-v2</artifactId>
-		    <version>0.35.0</version>
+		    <version>${langchain4j.version}</version>
 		</dependency>
 		
 		<dependency>
-    <groupId>dev.langchain4j</groupId>
-    <artifactId>langchain4j-open-ai</artifactId>
-    <version>0.35.0</version>
-</dependency>
+		    <groupId>dev.langchain4j</groupId>
+		    <artifactId>langchain4j-open-ai</artifactId>
+		    <version>${langchain4j.version}</version>
+		</dependency>
+	
+		<dependency>
+		        <groupId>dev.langchain4j</groupId>
+		        <artifactId>langchain4j-document-parser-apache-pdfbox</artifactId>
+		        <version>${langchain4j.version}</version>
+		    </dependency>
+		    <dependency>
+		        <groupId>dev.langchain4j</groupId>
+		        <artifactId>langchain4j-document-parser-apache-poi</artifactId>
+		        <version>${langchain4j.version}</version>
+		</dependency>
+		 <dependency>
+            <groupId>dev.langchain4j</groupId>
+            <artifactId>langchain4j-chroma</artifactId>
+            <version>${langchain4j.version}</version>
+        </dependency>
 		
 	</dependencies>
 	<dependencyManagement>
