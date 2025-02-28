@@ -98,7 +98,7 @@ public class LangChainConfiguration {
     }*/
     
     @Bean
-    EmbeddingModel embeddingModel() {
+    dev.langchain4j.model.embedding.EmbeddingModel embeddingModel() {
     	/*return OllamaEmbeddingModel.builder()
 	            .baseUrl(OLLAMA_HOST)
 	            .modelName(MODEL_NAME)
