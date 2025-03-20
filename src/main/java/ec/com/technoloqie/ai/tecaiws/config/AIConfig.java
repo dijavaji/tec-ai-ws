@@ -5,6 +5,7 @@ import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.ai.openai.api.common.OpenAiApiConstants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,12 +22,12 @@ public class AIConfig {
     }*/
 
     @Bean
-    public ChatClient chatClient(ChatClient.Builder chatClientBuilder) {
+    ChatClient chatClient(ChatClient.Builder chatClientBuilder) {
         return chatClientBuilder.build();
     }
 	
 	@Bean
-    public OpenAiChatModel openAiClient() {
+    OpenAiChatModel openAiClient() {
 		//System.getenv("GROQ_API_KEY")
 		//ocupando groqAI
 		/*var openAiApi = new OpenAiApi("https://api.groq.com/openai", groqApiKey );
@@ -36,17 +37,19 @@ public class AIConfig {
 				.maxTokens(200)   //.withMaxTokens(200)
 		        .build();
 		return new OpenAiChatModel(openAiApi, openAiChatOptions);*/
-		var openAiApi = new OpenAiApi(System.getenv("OPENAI_API_KEY"));
+		var openAiApi = OpenAiApi.builder()
+				.apiKey(System.getenv("OPENAI_API_KEY"))
+				.baseUrl(OpenAiApiConstants.DEFAULT_BASE_URL).build(); //new OpenAiApi(System.getenv("OPENAI_API_KEY"));
 		var openAiChatOptions = OpenAiChatOptions.builder()
 	            .model("gpt-3.5-turbo-0125")
 	            .temperature(0.1)
 	            //.maxTokens(200)
 	            .build();
-		return new OpenAiChatModel(openAiApi, openAiChatOptions);
+		return OpenAiChatModel.builder().openAiApi(openAiApi).defaultOptions(openAiChatOptions).build();  //OpenAiChatModel(openAiApi, openAiChatOptions);
     }
 
     @Bean
-    public PromptTemplate jokePromptTemplate() {
+    PromptTemplate jokePromptTemplate() {
         return new PromptTemplate("Tell me a {adjective} joke about {topic}");
     }
     

@@ -36,7 +36,7 @@ public class LangChainConfiguration {
 	
 	private static String MODEL_NAME ="deepseek-r1:14b"; //"qwen2:0.5b";		//llama3:latest		all-minilm:latest	orca-mini
 	
-	private static String OLLAMA_HOST ="http://35.211.131.67:11434";
+	private static String OLLAMA_HOST ="http://localhost:11434";
 	/**
      * This chat memory will be used by an {@link Assistant}
      */

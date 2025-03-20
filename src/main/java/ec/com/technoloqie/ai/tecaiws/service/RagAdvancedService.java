@@ -31,7 +31,6 @@ import dev.langchain4j.data.document.transformer.jsoup.HtmlToTextDocumentTransfo
 import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.ChatMemory;
-import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.input.Prompt;
@@ -73,6 +72,8 @@ public class RagAdvancedService {
 	
 	private final ChatMemory chatMemory;
 	
+	public static final String BASE_URL="http://localhost:11434";
+	
 	public RagAdvancedService(EmbeddingStore<TextSegment> embeddingStore, EmbeddingModel embeddingModel,
 			OpenAiChatModel chatModel, ChatMemory chatMemory) {
 		super();
@@ -91,7 +92,7 @@ public class RagAdvancedService {
         //embeddingStore = chromaEmbeddingStore();
 
         DocumentSplitter splitter = DocumentSplitters.recursive(600, 0);
-        ChatLanguageModel model = OllamaChatModel.builder().baseUrl("http://35.211.131.67:11434")
+        ChatLanguageModel model = OllamaChatModel.builder().baseUrl(BASE_URL)
 		.modelName("deepseek-r1:14b")	//("qwen2:0.5b")			//("deepseek-r1:14b")
 		.temperature(0.1)
 		//.timeout(Duration.ofSeconds(60))
@@ -275,7 +276,7 @@ public class RagAdvancedService {
 	                .queryRouter(queryRouter)
 	                .build();
 	        
-	        ChatLanguageModel model = OllamaChatModel.builder().baseUrl("http://localhost:11434")
+	        ChatLanguageModel model = OllamaChatModel.builder().baseUrl(BASE_URL)
 					.modelName("deepseek-r1:14b")
 					.temperature(0.1)
 					//.timeout(Duration.ofSeconds(60))
