@@ -1,6 +1,8 @@
 package ec.com.technoloqie.ai.tecaiws.service;
 
 import static dev.langchain4j.data.document.loader.FileSystemDocumentLoader.loadDocument;
+//import static dev.langchain4j.internal.Utils.randomUUID;
+import static java.util.stream.Collectors.joining;
 
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -29,6 +31,7 @@ import dev.langchain4j.data.document.parser.TextDocumentParser;
 import dev.langchain4j.data.document.splitter.DocumentSplitters;
 import dev.langchain4j.data.document.transformer.jsoup.HtmlToTextDocumentTransformer;
 import dev.langchain4j.data.embedding.Embedding;
+import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.ChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
@@ -36,6 +39,7 @@ import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.input.Prompt;
 import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.ollama.OllamaChatModel;
+import dev.langchain4j.model.openai.OpenAiTokenizer;
 import dev.langchain4j.rag.DefaultRetrievalAugmentor;
 import dev.langchain4j.rag.RetrievalAugmentor;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
@@ -57,7 +61,6 @@ import ec.com.technoloqie.ai.tecaiws.commons.exception.TecAIWsException;
 import ec.com.technoloqie.ai.tecaiws.model.dto.ChatDto;
 import ec.com.technoloqie.ai.tecaiws.model.dto.ChatNewsResponse;
 import lombok.extern.slf4j.Slf4j;
-//import static dev.langchain4j.internal.Utils.randomUUID;
 
 @Service
 @Slf4j
@@ -160,7 +163,8 @@ public class RagAdvancedService {
 	        try {
 	            URL fileUrl = RagAdvancedService.class.getResource(fileName);
 	            return Paths.get(fileUrl.toURI());
-	        } catch (URISyntaxException e) {
+	        } catch (Exception e) {
+	        	log.error("Error al cargar archivo {}", e);
 	            throw new RuntimeException(e);
 	        }
 	    }
@@ -318,4 +322,81 @@ public class RagAdvancedService {
 	        embeddingStore.addAll(embeddings, segments);
 	        return embeddingStore;
 	    }
+	 
+	 /**
+	  * Este ejemplo demuestra como utilizar las API LangChain4j de bajo nivel para implementar RAG.
+	  * @param question
+	  * @return
+	  */
+	 public String lowLevelNaiveRAG(String question) {
+		 
+		// Load the document that includes the information you'd like to "chat" about with the model.
+	        DocumentParser documentParser = new TextDocumentParser();
+	        Document document = loadDocument("/home/diego/workspaceSts4/tec-ai-ws/src/main/resources/miles-of-smiles-terms-of-use.txt", documentParser);
+
+	        // Split document into segments 100 tokens each
+	        DocumentSplitter splitter = DocumentSplitters.recursive(300,0);
+	        List<TextSegment> segments = splitter.split(document);
+
+	        // Embed segments (convert them into vectors that represent the meaning) using embedding model
+	        //EmbeddingModel embeddingModel = new BgeSmallEnV15QuantizedEmbeddingModel();
+	        List<Embedding> embeddings = embeddingModel.embedAll(segments).content();
+
+	        // Store embeddings into embedding store for further search / retrieval
+	        //EmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
+	        embeddingStore.addAll(embeddings, segments);
+
+	        // Specify the question you want to ask the model
+	        //String question = "Who is Charlie?";
+
+	        // Embed the question
+	        Embedding questionEmbedding = embeddingModel.embed(question).content();
+
+	        // Find relevant embeddings in embedding store by semantic similarity
+	        // You can play with parameters below to find a sweet spot for your specific use case
+	        int maxResults = 3;
+	        double minScore = 0.5;
+	        List<EmbeddingMatch<TextSegment>> relevantEmbeddings
+	                = embeddingStore.findRelevant(questionEmbedding, maxResults, minScore);
+
+	        // Create a prompt for the model that includes question and relevant embeddings
+	        PromptTemplate promptTemplate = PromptTemplate.from(
+	                "Answer the following question to the best of your ability:\n"
+	                        + "\n"
+	                        + "Question:\n"
+	                        + "{{question}}\n"
+	                        + "\n"
+	                        + "Base your answer on the following information:\n"
+	                        + "{{information}}");
+
+	        String information = relevantEmbeddings.stream()
+	                .map(match -> match.embedded().text())
+	                .collect(joining("\n\n"));
+
+	        Map<String, Object> variables = new HashMap<>();
+	        variables.put("question", question);
+	        variables.put("information", information);
+
+	        Prompt prompt = promptTemplate.apply(variables);
+
+	        // Send the prompt to the OpenAI chat model
+	        /*ChatLanguageModel chatModel = OpenAiChatModel.builder()
+	                .apiKey(OPENAI_API_KEY)
+	                .modelName(GPT_4_O_MINI)
+	                .timeout(Duration.ofSeconds(60))
+	                .build();
+	                AiMessage aiMessage = chatModel.chat(prompt.toUserMessage()).aiMessage();*/
+	        ChatLanguageModel model = OllamaChatModel.builder().baseUrl(BASE_URL)
+					.modelName("deepseek-r1:14b")
+					.temperature(0.1)
+					//.timeout(Duration.ofSeconds(60))
+					.build(); 
+	        AiMessage aiMessage = model.chat(prompt.toUserMessage()).aiMessage();
+
+	        // See an answer from the model
+	        String answer = aiMessage.text();
+	        System.out.println(answer); // Charlie is a cheerful carrot living in VeggieVille...
+	        
+		 return answer;
+	 }
 }
