@@ -101,8 +101,9 @@ public class PromptService {
 	        		la respuesta, simplemente diga "No se". {format}
 	            """;
 		
-		PromptTemplate promptTemplate = new PromptTemplate(template, Map.of("artist", artist, "format", format));
-		Prompt prompt = promptTemplate.create();
+		PromptTemplate promptTemplate = new PromptTemplate(template);
+		//PromptTemplate promptTemplate = new PromptTemplate(template, Map.of("artist", artist, "format", format)); //actualizo version
+		Prompt prompt = promptTemplate.create(Map.of("artist", artist, "format", format));
 		Generation generation = this.chatModel.call(prompt).getResult();
 
 		List<String> list = listOutputConverter.convert(generation.getOutput().getText());
@@ -118,9 +119,10 @@ public class PromptService {
 		        Si no sabes la respuesta, simplemente diga "No se". {format}
 		        """;
 
-		Prompt prompt = new PromptTemplate(template,
-		        Map.of("author", author, "format", format)).create();
-
+		PromptTemplate promptTemplate = new PromptTemplate(template);
+		
+		//Prompt prompt = new PromptTemplate(template,Map.of("author", author, "format", format)).create();
+		Prompt prompt = promptTemplate.create(Map.of("author", author, "format", format));
 		Generation generation = chatModel.call(prompt).getResult();
 
 		Map<String, Object> result = mapOutputConverter.convert(generation.getOutput().getText());
@@ -135,7 +137,11 @@ public class PromptService {
 				Genera una lista de libros escritos por el autor {author}. Si no estas seguro de que un libro pertenece a este autor, no lo incluyas.
 				{format}
 			        """;
-		Generation generation = chatModel.call(new PromptTemplate(template, Map.of("author", author, "format", format)).create()).getResult();
+		
+		PromptTemplate promptTemplate = new PromptTemplate(template);
+		//new PromptTemplate(template, Map.of("author", author, "format", format)).create()
+		Prompt prompt = promptTemplate.create(Map.of("author", author, "format", format));
+		Generation generation = chatModel.call(prompt).getResult();
 
 		Author authorBooks = beanOutputConverter.convert(generation.getOutput().getText());
 		return authorBooks;
