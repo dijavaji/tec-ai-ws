@@ -32,4 +32,12 @@ public class MultimodalTest {
 		log.info("respuesta: {}", response);
 		Assertions.assertNotNull(response,"getImageGenerationTest");
 	}
+	
+	@Test
+	void getImageInputTest() {
+		
+		String response = this.imageAIServiceImpl.getImageModelResponse("Explain what do you see on this picture?", "https://storage.googleapis.com/chatbot-doc_bucket/docKnowlege/Screenshot_2025-07-12_19-48-05.jpg");
+		log.info("respuesta: {}", response);
+		Assertions.assertNotNull(response,"getImageInputTest");
+	}
 }

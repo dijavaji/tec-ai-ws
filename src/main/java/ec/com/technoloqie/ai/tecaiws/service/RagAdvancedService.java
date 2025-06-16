@@ -4,7 +4,6 @@ import static dev.langchain4j.data.document.loader.FileSystemDocumentLoader.load
 //import static dev.langchain4j.internal.Utils.randomUUID;
 import static java.util.stream.Collectors.joining;
 
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -34,12 +33,12 @@ import dev.langchain4j.data.embedding.Embedding;
 import dev.langchain4j.data.message.AiMessage;
 import dev.langchain4j.data.segment.TextSegment;
 import dev.langchain4j.memory.ChatMemory;
+import dev.langchain4j.memory.chat.MessageWindowChatMemory;
 import dev.langchain4j.model.chat.ChatLanguageModel;
 import dev.langchain4j.model.embedding.EmbeddingModel;
 import dev.langchain4j.model.input.Prompt;
 import dev.langchain4j.model.input.PromptTemplate;
 import dev.langchain4j.model.ollama.OllamaChatModel;
-import dev.langchain4j.model.openai.OpenAiTokenizer;
 import dev.langchain4j.rag.DefaultRetrievalAugmentor;
 import dev.langchain4j.rag.RetrievalAugmentor;
 import dev.langchain4j.rag.content.retriever.ContentRetriever;
@@ -47,6 +46,8 @@ import dev.langchain4j.rag.content.retriever.EmbeddingStoreContentRetriever;
 import dev.langchain4j.rag.content.retriever.WebSearchContentRetriever;
 import dev.langchain4j.rag.query.router.DefaultQueryRouter;
 import dev.langchain4j.rag.query.router.QueryRouter;
+import dev.langchain4j.rag.query.transformer.CompressingQueryTransformer;
+import dev.langchain4j.rag.query.transformer.QueryTransformer;
 import dev.langchain4j.service.AiServices;
 import dev.langchain4j.service.UserMessage;
 import dev.langchain4j.store.embedding.EmbeddingMatch;
@@ -75,7 +76,8 @@ public class RagAdvancedService {
 	
 	private final ChatMemory chatMemory;
 	
-	public static final String BASE_URL="http://localhost:11434";
+	@Value("${ec.com.technoloqie.ai.ollama.base-url}")
+    private String BASE_URL;
 	
 	public RagAdvancedService(EmbeddingStore<TextSegment> embeddingStore, EmbeddingModel embeddingModel,
 			OpenAiChatModel chatModel, ChatMemory chatMemory) {
@@ -213,9 +215,13 @@ public class RagAdvancedService {
 			
 			String format = mapOutputConverter.getFormat();
 
-			org.springframework.ai.chat.prompt.Prompt prompt = new org.springframework.ai.chat.prompt.PromptTemplate(promptTemplateResource,
-			        Map.of("input", chat.getText(), "documents", docs, "format", format)).create();
+			//org.springframework.ai.chat.prompt.Prompt prompt = new org.springframework.ai.chat.prompt.PromptTemplate(promptTemplateResource,
+			        //Map.of("input", chat.getText(), "documents", docs, "format", format)).create();
+			org.springframework.ai.chat.prompt.PromptTemplate promptTemplate = new org.springframework.ai.chat.prompt.PromptTemplate(promptTemplateResource);
 
+			org.springframework.ai.chat.prompt.Prompt prompt = promptTemplate.create(Map.of("input", chat.getText(), "documents", docs, "format", format));
+
+			
 			Generation generation = chatModel.call(prompt).getResult();
 			
 			
@@ -398,5 +404,55 @@ public class RagAdvancedService {
 	        System.out.println(answer); // Charlie is a cheerful carrot living in VeggieVille...
 	        
 		 return answer;
+	 }
+	 
+	 public String advancedRAGwithQueryCompression(String documentPath) {
+		 Document document = loadDocument(toPath(documentPath), new TextDocumentParser());
+		 String pregunta = "pregunta relacionada al documento";
+
+	        //EmbeddingModel embeddingModel = new BgeSmallEnV15QuantizedEmbeddingModel();
+
+	        //EmbeddingStore<TextSegment> embeddingStore = new InMemoryEmbeddingStore<>();
+
+	        EmbeddingStoreIngestor ingestor = EmbeddingStoreIngestor.builder()
+	                .documentSplitter(DocumentSplitters.recursive(300, 0))
+	                .embeddingModel(embeddingModel)
+	                .embeddingStore(embeddingStore)
+	                .build();
+
+	        ingestor.ingest(document);
+
+	        ChatLanguageModel chatLanguageModel = OllamaChatModel.builder().baseUrl(BASE_URL)
+					.modelName("deepseek-r1:14b")
+					.temperature(0.1)
+					//.timeout(Duration.ofSeconds(60))
+					.build(); 
+
+	        // We will create a CompressingQueryTransformer, which is responsible for compressing
+	        // the user's query and the preceding conversation into a single, stand-alone query.
+	        // This should significantly improve the quality of the retrieval process.
+	        QueryTransformer queryTransformer = new CompressingQueryTransformer(chatLanguageModel);
+
+	        ContentRetriever contentRetriever = EmbeddingStoreContentRetriever.builder()
+	                .embeddingStore(embeddingStore)
+	                .embeddingModel(embeddingModel)
+	                .maxResults(2)
+	                .minScore(0.6)
+	                .build();
+
+	        // The RetrievalAugmentor serves as the entry point into the RAG flow in LangChain4j.
+	        // It can be configured to customize the RAG behavior according to your requirements.
+	        // In subsequent examples, we will explore more customizations.
+	        RetrievalAugmentor retrievalAugmentor = DefaultRetrievalAugmentor.builder()
+	                .queryTransformer(queryTransformer)
+	                .contentRetriever(contentRetriever)
+	                .build();
+
+	        return AiServices.builder(Assistant.class)
+	                .chatLanguageModel(chatLanguageModel)
+	                .retrievalAugmentor(retrievalAugmentor)
+	                .chatMemory(MessageWindowChatMemory.withMaxMessages(10))
+	                .build().chat(pregunta);
+		 //return null;
 	 }
 }
