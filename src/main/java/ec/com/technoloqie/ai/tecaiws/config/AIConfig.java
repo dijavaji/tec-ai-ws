@@ -4,11 +4,16 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.PromptTemplate;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.ai.openai.OpenAiImageModel;
+import org.springframework.ai.openai.OpenAiImageOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.ai.openai.api.OpenAiImageApi;
 import org.springframework.ai.openai.api.common.OpenAiApiConstants;
+import org.springframework.ai.retry.RetryUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 
 @Configuration
 public class AIConfig {
@@ -51,6 +56,19 @@ public class AIConfig {
     @Bean
     PromptTemplate jokePromptTemplate() {
         return new PromptTemplate("Tell me a {adjective} joke about {topic}");
+    }
+    
+    @Bean
+    OpenAiImageModel getOpenAiImageModel() {
+    	var openAiApi = OpenAiImageApi.builder()
+				.apiKey(System.getenv("OPENAI_API_KEY"))
+				.baseUrl(OpenAiApiConstants.DEFAULT_BASE_URL).build();
+    	var openAiImageOptions = OpenAiImageOptions.builder()
+    			.model(OpenAiImageApi.DEFAULT_IMAGE_MODEL)
+    			.N(1) //The number of images to generate
+    			.build();
+    	
+    	return new OpenAiImageModel(openAiApi, openAiImageOptions, RetryUtils.DEFAULT_RETRY_TEMPLATE);
     }
     
     

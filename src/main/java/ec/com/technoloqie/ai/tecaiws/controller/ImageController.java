@@ -1,21 +1,25 @@
 package ec.com.technoloqie.ai.tecaiws.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import ec.com.technoloqie.ai.tecaiws.service.ImageAIServiceImpl;
 
 @RestController
 @RequestMapping("/images")
 public class ImageController {
 	
-	/*private final ImageClient imageClient;
+	private final ImageAIServiceImpl imageService;
 	
-	public ImageController(ImageClient imageClient) {
-		this.imageClient = imageClient;
+	public ImageController(ImageAIServiceImpl imageService) {
+		this.imageService = imageService;
 	}
 	
-	@GetMapping
+	@GetMapping("/image-gen")
 	public String getUrlImage(@RequestParam("text") String text) {
 		
-		return this.imageClient.call(new ImagePrompt(text)).getResult().getOutput().getUrl();
-	}*/
+		return this.imageService.getImageGeneration(text);
+	}
 }
